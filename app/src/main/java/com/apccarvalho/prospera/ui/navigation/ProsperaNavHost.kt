@@ -2,7 +2,11 @@ package com.apccarvalho.prospera.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.apccarvalho.prospera.ui.ProsperaViewModelFactory
@@ -22,8 +28,13 @@ import com.apccarvalho.prospera.ui.auth.CadastroViewModel
 import com.apccarvalho.prospera.ui.auth.DestinoAposAuth
 import com.apccarvalho.prospera.ui.auth.LoginScreen
 import com.apccarvalho.prospera.ui.auth.LoginViewModel
+import com.apccarvalho.prospera.ui.components.AbaPrincipal
+import com.apccarvalho.prospera.ui.components.BotaoNovaCompra
+import com.apccarvalho.prospera.ui.components.BottomNav
+import com.apccarvalho.prospera.ui.compra.NovaCompraScreen
 import com.apccarvalho.prospera.ui.dashboard.DashboardScreen
 import com.apccarvalho.prospera.ui.dashboard.DashboardViewModel
+import com.apccarvalho.prospera.ui.historico.HistoricoScreen
 import com.apccarvalho.prospera.ui.tetos.TetosScreen
 import com.apccarvalho.prospera.ui.tetos.TetosViewModel
 import com.apccarvalho.prospera.ui.theme.FundoLavanda
@@ -32,9 +43,49 @@ import com.apccarvalho.prospera.ui.theme.FundoLavanda
 fun ProsperaNavHost(
     navController: NavHostController = rememberNavController(),
 ) {
+    val entradaAtual by navController.currentBackStackEntryAsState()
+    val abaAtiva = entradaAtual?.abaPrincipal()
+
+    // O Scaffold externo é o único que conhece a BottomNav e o FAB. O padding dele é consumido
+    // como insets para que as telas não somem de novo a barra de navegação do sistema.
+    Scaffold(
+        containerColor = FundoLavanda,
+        contentWindowInsets = WindowInsets(0),
+        bottomBar = {
+            if (abaAtiva != null) {
+                BottomNav(
+                    abaAtiva = abaAtiva,
+                    aoSelecionar = navController::navegarParaAba,
+                )
+            }
+        },
+        floatingActionButton = {
+            if (abaAtiva == AbaPrincipal.INICIO || abaAtiva == AbaPrincipal.HISTORICO) {
+                BotaoNovaCompra(
+                    aoClicar = {
+                        navController.navigate(Rotas.novaCompra()) { launchSingleTop = true }
+                    },
+                )
+            }
+        },
+    ) { innerPadding ->
+        NavHostProspera(
+            navController = navController,
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
+        )
+    }
+}
+
+@Composable
+private fun NavHostProspera(
+    navController: NavHostController,
+    modifier: Modifier,
+) {
     // A rota "inicio" só mostra o fundo do app enquanto o estado de login é verificado;
     // assim o Login não aparece por um instante para quem já está logado.
-    NavHost(navController = navController, startDestination = Rotas.INICIO) {
+    NavHost(navController = navController, startDestination = Rotas.INICIO, modifier = modifier) {
         composable(Rotas.INICIO) {
             val viewModel: InicioViewModel = viewModel(factory = ProsperaViewModelFactory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -140,6 +191,48 @@ fun ProsperaNavHost(
                 aoSair = viewModel::sair,
             )
         }
+
+        composable(Rotas.HISTORICO) {
+            HistoricoScreen()
+        }
+
+        composable(
+            route = Rotas.NOVA_COMPRA,
+            arguments = listOf(
+                navArgument(Rotas.ARG_COMPRA_ID) {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                },
+            ),
+        ) {
+            NovaCompraScreen(
+                aoVoltar = dropUnlessResumed { navController.popBackStack() },
+            )
+        }
+    }
+}
+
+private fun NavBackStackEntry.abaPrincipal(): AbaPrincipal? = when (destination.route) {
+    Rotas.DASHBOARD -> AbaPrincipal.INICIO
+    Rotas.HISTORICO -> AbaPrincipal.HISTORICO
+    Rotas.TETOS -> {
+        val primeiroAcesso = arguments?.getBoolean(Rotas.ARG_PRIMEIRO_ACESSO) ?: false
+        if (primeiroAcesso) null else AbaPrincipal.TETOS
+    }
+
+    else -> null
+}
+
+private fun NavHostController.navegarParaAba(aba: AbaPrincipal) {
+    val rota = when (aba) {
+        AbaPrincipal.INICIO -> Rotas.DASHBOARD
+        AbaPrincipal.HISTORICO -> Rotas.HISTORICO
+        AbaPrincipal.TETOS -> Rotas.tetos(primeiroAcesso = false)
+    }
+    navigate(rota) {
+        popUpTo(Rotas.DASHBOARD) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
     }
 }
 

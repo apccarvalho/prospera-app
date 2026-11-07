@@ -57,4 +57,10 @@
     <string name="dashboard_sem_compras">Nenhuma compra registrada neste mês. Toque em Nova compra para começar.</string>
     <string name="dashboard_por_categoria">Por categoria</string>
     <string name="dashboard_maior_consumo">Maior consumo primeiro</string>
+
+    <string name="nav_inicio">Início</string>
+    <string name="nav_historico">Histórico</string>
+    <string name="nav_tetos">Tetos</string>
+    <string name="nova_compra">Nova compra</string>
+    <string name="historico_titulo">Histórico</string>
 </resources>
