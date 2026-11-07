@@ -40,6 +40,13 @@
     <string name="tetos_total">Teto total mensal</string>
     <string name="tetos_aviso_renda">Seus tetos somam %1$d%% da sua renda</string>
     <string name="tetos_salvar">Salvar tetos</string>
+
+    <string name="percentual_inteiro">%1$d%%</string>
+    <string name="valor_de_teto">%1$s de %2$s</string>
+    <string name="categoria_restam">Restam %1$s</string>
+    <string name="categoria_atencao_restam">Atenção: restam %1$s</string>
+    <string name="categoria_estourado_em">Teto estourado em %1$s</string>
+
     <string name="dashboard_titulo">Dashboard</string>
     <string name="dashboard_sair">Sair</string>
 </resources>
