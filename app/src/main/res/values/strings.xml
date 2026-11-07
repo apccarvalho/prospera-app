@@ -47,6 +47,14 @@
     <string name="categoria_atencao_restam">Atenção: restam %1$s</string>
     <string name="categoria_estourado_em">Teto estourado em %1$s</string>
 
-    <string name="dashboard_titulo">Dashboard</string>
+    <string name="dashboard_ola_nome">Olá, %1$s</string>
+    <string name="dashboard_ola">Olá!</string>
     <string name="dashboard_sair">Sair</string>
+    <string name="dashboard_total_gasto">Total gasto no mês</string>
+    <string name="dashboard_percentual_do_teto">%1$d%% do teto total de %2$s</string>
+    <string name="dashboard_saldo_disponivel">Saldo disponível</string>
+    <string name="dashboard_compras_no_mes">Compras no mês</string>
+    <string name="dashboard_sem_compras">Nenhuma compra registrada neste mês. Toque em Nova compra para começar.</string>
+    <string name="dashboard_por_categoria">Por categoria</string>
+    <string name="dashboard_maior_consumo">Maior consumo primeiro</string>
 </resources>

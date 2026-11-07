@@ -126,14 +126,18 @@ fun ProsperaNavHost(
 
         composable(Rotas.DASHBOARD) {
             val viewModel: DashboardViewModel = viewModel(factory = ProsperaViewModelFactory)
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            DashboardScreen(
-                aoSair = dropUnlessResumed {
-                    viewModel.sair()
+            LaunchedEffect(uiState.saiu) {
+                if (uiState.saiu) {
                     navController.navigate(Rotas.LOGIN) {
                         popUpTo(navController.graph.id) { inclusive = true }
                     }
-                },
+                }
+            }
+            DashboardScreen(
+                uiState = uiState,
+                aoSair = viewModel::sair,
             )
         }
     }
