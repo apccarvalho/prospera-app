@@ -26,6 +26,10 @@ class AuthRepository(private val auth: FirebaseAuth) {
         resultado.user?.updateProfile(perfil)?.await()
     }
 
+    suspend fun enviarRedefinicaoSenha(email: String): Result<Unit> = executar {
+        auth.sendPasswordResetEmail(email.trim()).await()
+    }
+
     fun sair() {
         auth.signOut()
     }
