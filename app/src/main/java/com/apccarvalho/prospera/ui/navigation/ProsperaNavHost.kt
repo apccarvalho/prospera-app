@@ -104,24 +104,23 @@ fun ProsperaNavHost(
                     defaultValue = false
                 },
             ),
-        ) { entrada ->
-            val primeiroAcesso = entrada.arguments?.getBoolean(Rotas.ARG_PRIMEIRO_ACESSO) ?: false
+        ) {
             val viewModel: TetosViewModel = viewModel(factory = ProsperaViewModelFactory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             LaunchedEffect(uiState.concluido) {
-                if (!uiState.concluido) return@LaunchedEffect
-                if (primeiroAcesso) {
+                if (uiState.concluido) {
                     navController.navigate(Rotas.DASHBOARD) {
                         popUpTo(Rotas.TETOS) { inclusive = true }
                     }
-                } else {
-                    navController.popBackStack()
                 }
             }
             TetosScreen(
                 uiState = uiState,
-                aoConcluir = viewModel::salvar,
+                aoAlterarRenda = viewModel::alterarRenda,
+                aoAlterarTeto = viewModel::alterarTeto,
+                aoSalvar = viewModel::salvar,
+                aoMensagemInformativaExibida = viewModel::mensagemInformativaExibida,
             )
         }
 

@@ -31,8 +31,15 @@
     <string name="cadastro_entrar">Entrar</string>
     <string name="voltar">Voltar</string>
 
-    <string name="tetos_titulo">Tetos de gastos</string>
-    <string name="tetos_concluir">Concluir</string>
+    <string name="tetos_titulo_primeiro_acesso">Defina seus tetos</string>
+    <string name="tetos_titulo_edicao">Meus tetos</string>
+    <string name="tetos_subtitulo">Defina quanto você quer gastar por mês em cada categoria.</string>
+    <string name="tetos_renda_rotulo">Renda mensal</string>
+    <string name="tetos_renda_apoio">Usada como referência para planejar seus tetos.</string>
+    <string name="tetos_por_categoria">Tetos por categoria</string>
+    <string name="tetos_total">Teto total mensal</string>
+    <string name="tetos_aviso_renda">Seus tetos somam %1$d%% da sua renda</string>
+    <string name="tetos_salvar">Salvar tetos</string>
     <string name="dashboard_titulo">Dashboard</string>
     <string name="dashboard_sair">Sair</string>
 </resources>
