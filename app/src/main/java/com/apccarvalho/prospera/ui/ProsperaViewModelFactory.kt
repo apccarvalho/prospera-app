@@ -9,6 +9,9 @@ import com.apccarvalho.prospera.ProsperaApp
 import com.apccarvalho.prospera.di.AppContainer
 import com.apccarvalho.prospera.ui.auth.CadastroViewModel
 import com.apccarvalho.prospera.ui.auth.LoginViewModel
+import com.apccarvalho.prospera.ui.dashboard.DashboardViewModel
+import com.apccarvalho.prospera.ui.navigation.InicioViewModel
+import com.apccarvalho.prospera.ui.tetos.TetosViewModel
 
 val ProsperaViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
     initializer {
@@ -17,6 +20,17 @@ val ProsperaViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
     }
     initializer {
         CadastroViewModel(appContainer().authRepository)
+    }
+    initializer {
+        val container = appContainer()
+        InicioViewModel(container.authRepository, container.orcamentoRepository)
+    }
+    initializer {
+        val container = appContainer()
+        TetosViewModel(container.authRepository, container.orcamentoRepository)
+    }
+    initializer {
+        DashboardViewModel(appContainer().authRepository)
     }
 }
 
