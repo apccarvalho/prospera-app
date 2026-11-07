@@ -36,7 +36,12 @@ val ProsperaViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
         )
     }
     initializer {
-        DashboardViewModel(appContainer().authRepository)
+        val container = appContainer()
+        DashboardViewModel(
+            compraRepository = container.compraRepository,
+            orcamentoRepository = container.orcamentoRepository,
+            authRepository = container.authRepository,
+        )
     }
 }
 
