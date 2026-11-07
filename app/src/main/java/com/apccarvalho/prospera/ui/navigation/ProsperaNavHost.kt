@@ -121,7 +121,7 @@ fun ProsperaNavHost(
             }
             TetosScreen(
                 uiState = uiState,
-                aoConcluir = viewModel::concluir,
+                aoConcluir = viewModel::salvar,
             )
         }
 
