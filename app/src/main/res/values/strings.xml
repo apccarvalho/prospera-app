@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">PROSPERA</string>
+
+    <string name="mostrar_senha">Mostrar senha</string>
+    <string name="ocultar_senha">Ocultar senha</string>
 </resources>
