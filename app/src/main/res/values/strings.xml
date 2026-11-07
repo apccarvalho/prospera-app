@@ -3,4 +3,31 @@
 
     <string name="mostrar_senha">Mostrar senha</string>
     <string name="ocultar_senha">Ocultar senha</string>
+
+    <string name="slogan">Controle hoje, prospere amanhã.</string>
+    <string name="rotulo_nome">Nome</string>
+    <string name="rotulo_email">E-mail</string>
+    <string name="rotulo_senha">Senha</string>
+    <string name="rotulo_confirmar_senha">Confirmar senha</string>
+    <string name="placeholder_nome">Como podemos te chamar?</string>
+    <string name="placeholder_email">seu@email.com</string>
+
+    <string name="login_titulo">Entrar</string>
+    <string name="login_subtitulo">Acesse sua conta para acompanhar seus gastos do mês.</string>
+    <string name="login_placeholder_senha">Digite sua senha</string>
+    <string name="login_esqueci_senha">Esqueci minha senha</string>
+    <string name="login_botao">Entrar</string>
+    <string name="login_sem_conta">Não tem uma conta? </string>
+    <string name="login_cadastre_se">Cadastre-se</string>
+
+    <string name="cadastro_barra_titulo">Criar conta</string>
+    <string name="cadastro_titulo">Comece a prosperar</string>
+    <string name="cadastro_subtitulo">Crie sua conta para definir seus tetos e acompanhar seus gastos.</string>
+    <string name="cadastro_placeholder_senha">Crie uma senha</string>
+    <string name="cadastro_apoio_senha">Mínimo de 6 caracteres</string>
+    <string name="cadastro_placeholder_confirmar_senha">Repita a senha</string>
+    <string name="cadastro_botao">Criar conta</string>
+    <string name="cadastro_ja_tem_conta">Já tem uma conta? </string>
+    <string name="cadastro_entrar">Entrar</string>
+    <string name="voltar">Voltar</string>
 </resources>
