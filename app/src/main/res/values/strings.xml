@@ -17,7 +17,7 @@
     <string name="login_placeholder_senha">Digite sua senha</string>
     <string name="login_esqueci_senha">Esqueci minha senha</string>
     <string name="login_botao">Entrar</string>
-    <string name="login_sem_conta">Não tem uma conta? </string>
+    <string name="login_sem_conta">"Não tem uma conta? "</string>
     <string name="login_cadastre_se">Cadastre-se</string>
 
     <string name="cadastro_barra_titulo">Criar conta</string>
@@ -27,7 +27,7 @@
     <string name="cadastro_apoio_senha">Mínimo de 6 caracteres</string>
     <string name="cadastro_placeholder_confirmar_senha">Repita a senha</string>
     <string name="cadastro_botao">Criar conta</string>
-    <string name="cadastro_ja_tem_conta">Já tem uma conta? </string>
+    <string name="cadastro_ja_tem_conta">"Já tem uma conta? "</string>
     <string name="cadastro_entrar">Entrar</string>
     <string name="voltar">Voltar</string>
 
