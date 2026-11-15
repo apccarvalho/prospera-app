@@ -69,4 +69,14 @@
     <string name="data_ontem">Ontem, %1$s</string>
     <string name="data_escolher">Escolher data</string>
     <string name="data_confirmar">OK</string>
+
+    <string name="compra_valor">Valor da compra</string>
+    <string name="compra_categoria">Categoria</string>
+    <string name="compra_obrigatoria">Obrigatória</string>
+    <string name="compra_previa_teto">Após esta compra: %1$s de %2$s (%3$d%%)</string>
+    <string name="compra_forma_pagamento">Forma de pagamento</string>
+    <string name="compra_estabelecimento">Estabelecimento</string>
+    <string name="compra_estabelecimento_placeholder">Ex.: Posto Petrobras, Drogaria Minas</string>
+    <string name="compra_data">Data</string>
+    <string name="compra_salvar">Salvar compra</string>
 </resources>

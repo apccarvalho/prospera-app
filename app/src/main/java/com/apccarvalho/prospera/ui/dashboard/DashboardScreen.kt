@@ -26,8 +26,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +49,8 @@ import com.apccarvalho.prospera.domain.util.resumirCategorias
 import com.apccarvalho.prospera.ui.components.BarraProgresso
 import com.apccarvalho.prospera.ui.components.CabecalhoLilas
 import com.apccarvalho.prospera.ui.components.CardCategoria
+import com.apccarvalho.prospera.ui.components.EspacoBotaoFlutuante
+import com.apccarvalho.prospera.ui.components.ExibirMensagemRecebida
 import com.apccarvalho.prospera.ui.components.SeloPercentual
 import com.apccarvalho.prospera.ui.components.percentualInteiro
 import com.apccarvalho.prospera.ui.components.sombraLilas
@@ -65,13 +70,36 @@ fun DashboardScreen(
     uiState: DashboardUiState,
     aoSair: () -> Unit,
     modifier: Modifier = Modifier,
+    mensagem: String? = null,
+    aoMensagemExibida: () -> Unit = {},
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    ExibirMensagemRecebida(mensagem, snackbarHostState, aoMensagemExibida)
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(FundoLavanda),
+    ) {
+        ConteudoDashboard(uiState = uiState, aoSair = aoSair)
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = EspacoBotaoFlutuante),
+        )
+    }
+}
+
+@Composable
+private fun ConteudoDashboard(
+    uiState: DashboardUiState,
+    aoSair: () -> Unit,
 ) {
     // O cabeçalho ocupa a largura toda, então o padding horizontal é aplicado item a item
     // em vez de no contentPadding da LazyColumn.
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(FundoLavanda),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item(key = "topo") {
@@ -89,7 +117,7 @@ fun DashboardScreen(
             )
         }
         item(key = "espaco-fab") {
-            Spacer(Modifier.height(96.dp))
+            Spacer(Modifier.height(EspacoBotaoFlutuante + 16.dp))
         }
     }
 }

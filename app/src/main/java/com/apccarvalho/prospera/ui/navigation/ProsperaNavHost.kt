@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +33,7 @@ import com.apccarvalho.prospera.ui.components.AbaPrincipal
 import com.apccarvalho.prospera.ui.components.BotaoNovaCompra
 import com.apccarvalho.prospera.ui.components.BottomNav
 import com.apccarvalho.prospera.ui.compra.NovaCompraScreen
+import com.apccarvalho.prospera.ui.compra.NovaCompraViewModel
 import com.apccarvalho.prospera.ui.dashboard.DashboardScreen
 import com.apccarvalho.prospera.ui.dashboard.DashboardViewModel
 import com.apccarvalho.prospera.ui.historico.HistoricoScreen
@@ -175,9 +177,10 @@ private fun NavHostProspera(
             )
         }
 
-        composable(Rotas.DASHBOARD) {
+        composable(Rotas.DASHBOARD) { entrada ->
             val viewModel: DashboardViewModel = viewModel(factory = ProsperaViewModelFactory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val mensagem by entrada.mensagemDeCompra()
 
             LaunchedEffect(uiState.saiu) {
                 if (uiState.saiu) {
@@ -189,6 +192,8 @@ private fun NavHostProspera(
             DashboardScreen(
                 uiState = uiState,
                 aoSair = viewModel::sair,
+                mensagem = mensagem,
+                aoMensagemExibida = entrada::consumirMensagemDeCompra,
             )
         }
 
@@ -204,12 +209,42 @@ private fun NavHostProspera(
                     defaultValue = Rotas.COMPRA_NOVA
                 },
             ),
-        ) {
+        ) { entrada ->
+            val viewModel: NovaCompraViewModel = viewModel(factory = ProsperaViewModelFactory)
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            LaunchedEffect(uiState.mensagemConclusao) {
+                uiState.mensagemConclusao?.let { mensagem ->
+                    navController.voltarComMensagem(entrada, mensagem)
+                }
+            }
             NovaCompraScreen(
+                uiState = uiState,
+                aoAlterarValor = viewModel::alterarValor,
+                aoSelecionarCategoria = viewModel::selecionarCategoria,
+                aoSelecionarFormaPagamento = viewModel::selecionarFormaPagamento,
+                aoAlterarEstabelecimento = viewModel::alterarEstabelecimento,
+                aoAlterarData = viewModel::alterarData,
+                aoSalvar = viewModel::salvar,
                 aoVoltar = dropUnlessResumed { navController.popBackStack() },
             )
         }
     }
+}
+
+@Composable
+private fun NavBackStackEntry.mensagemDeCompra(): State<String?> =
+    savedStateHandle.getStateFlow<String?>(Rotas.CHAVE_MENSAGEM_COMPRA, null)
+        .collectAsStateWithLifecycle()
+
+private fun NavBackStackEntry.consumirMensagemDeCompra() {
+    savedStateHandle[Rotas.CHAVE_MENSAGEM_COMPRA] = null
+}
+
+private fun NavHostController.voltarComMensagem(entrada: NavBackStackEntry, mensagem: String) {
+    if (currentBackStackEntry != entrada) return
+    previousBackStackEntry?.savedStateHandle?.set(Rotas.CHAVE_MENSAGEM_COMPRA, mensagem)
+    popBackStack()
 }
 
 private fun NavBackStackEntry.abaPrincipal(): AbaPrincipal? = when (destination.route) {

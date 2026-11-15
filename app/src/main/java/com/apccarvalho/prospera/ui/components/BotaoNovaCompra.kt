@@ -13,11 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apccarvalho.prospera.R
 import com.apccarvalho.prospera.ui.theme.Branco
 import com.apccarvalho.prospera.ui.theme.ProsperaTheme
+
+/**
+ * Altura que o botão ocupa sobre o conteúdo (56dp do botão + 16dp da margem do Scaffold, com folga),
+ * usada pelas telas para afastar do botão o fim das listas e o Snackbar.
+ */
+val EspacoBotaoFlutuante: Dp = 80.dp
 
 @Composable
 fun BotaoNovaCompra(
