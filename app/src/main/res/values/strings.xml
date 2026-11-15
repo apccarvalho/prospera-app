@@ -88,4 +88,10 @@
     <string name="compra_estabelecimento_placeholder">Ex.: Posto Petrobras, Drogaria Minas</string>
     <string name="compra_data">Data</string>
     <string name="compra_salvar">Salvar compra</string>
+    <string name="compra_titulo_edicao">Editar compra</string>
+    <string name="compra_salvar_alteracoes">Salvar alterações</string>
+    <string name="compra_excluir">Excluir compra</string>
+    <string name="compra_excluir_titulo">Excluir esta compra?</string>
+    <string name="compra_excluir_texto">Esta ação não pode ser desfeita.</string>
+    <string name="compra_excluir_confirmar">Excluir</string>
 </resources>

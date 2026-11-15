@@ -25,17 +25,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +76,7 @@ import com.apccarvalho.prospera.ui.components.percentualInteiro
 import com.apccarvalho.prospera.ui.components.sombraLilas
 import com.apccarvalho.prospera.ui.theme.Ameixa
 import com.apccarvalho.prospera.ui.theme.Branco
+import com.apccarvalho.prospera.ui.theme.Erro
 import com.apccarvalho.prospera.ui.theme.FundoLavanda
 import com.apccarvalho.prospera.ui.theme.LilasClaro
 import com.apccarvalho.prospera.ui.theme.Placeholder
@@ -93,15 +98,19 @@ fun NovaCompraScreen(
     aoAlterarEstabelecimento: (String) -> Unit,
     aoAlterarData: (LocalDate) -> Unit,
     aoSalvar: () -> Unit,
+    aoExcluir: () -> Unit,
     aoVoltar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focoValor = remember { FocusRequester() }
     val teclado = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
-        focoValor.requestFocus()
-        teclado?.show()
+        if (!uiState.modoEdicao) {
+            focoValor.requestFocus()
+            teclado?.show()
+        }
     }
+    var confirmandoExclusao by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -110,8 +119,15 @@ fun NovaCompraScreen(
             .imePadding(),
     ) {
         BarraSuperior(
-            titulo = stringResource(R.string.nova_compra),
+            titulo = stringResource(
+                if (uiState.modoEdicao) R.string.compra_titulo_edicao else R.string.nova_compra
+            ),
             aoVoltar = aoVoltar,
+            aoExcluir = if (uiState.modoEdicao) {
+                { confirmandoExclusao = true }
+            } else {
+                null
+            },
         )
 
         Column(
@@ -165,17 +181,52 @@ fun NovaCompraScreen(
         }
 
         Rodape(
-            textoBotao = stringResource(R.string.compra_salvar),
+            textoBotao = stringResource(
+                if (uiState.modoEdicao) R.string.compra_salvar_alteracoes else R.string.compra_salvar
+            ),
             salvando = uiState.salvando,
             aoSalvar = aoSalvar,
         )
     }
+
+    if (confirmandoExclusao) {
+        DialogoExclusao(
+            aoConfirmar = {
+                confirmandoExclusao = false
+                aoExcluir()
+            },
+            aoCancelar = { confirmandoExclusao = false },
+        )
+    }
+}
+
+@Composable
+private fun DialogoExclusao(
+    aoConfirmar: () -> Unit,
+    aoCancelar: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = aoCancelar,
+        title = { Text(stringResource(R.string.compra_excluir_titulo)) },
+        text = { Text(stringResource(R.string.compra_excluir_texto)) },
+        confirmButton = {
+            TextButton(onClick = aoConfirmar) {
+                Text(stringResource(R.string.compra_excluir_confirmar), color = Erro)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = aoCancelar) {
+                Text(stringResource(R.string.cancelar))
+            }
+        },
+    )
 }
 
 @Composable
 private fun BarraSuperior(
     titulo: String,
     aoVoltar: () -> Unit,
+    aoExcluir: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier
@@ -205,6 +256,15 @@ private fun BarraSuperior(
             color = Ameixa,
             modifier = Modifier.weight(1f),
         )
+        if (aoExcluir != null) {
+            IconButton(onClick = aoExcluir, modifier = Modifier.size(40.dp)) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = stringResource(R.string.compra_excluir),
+                    tint = Erro,
+                )
+            }
+        }
     }
 }
 
@@ -435,6 +495,7 @@ private fun NovaCompraScreenExemplo(uiState: NovaCompraUiState) {
             aoAlterarEstabelecimento = {},
             aoAlterarData = {},
             aoSalvar = {},
+            aoExcluir = {},
             aoVoltar = {},
         )
     }

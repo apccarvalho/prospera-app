@@ -37,6 +37,8 @@ data class PreviaTeto(
 )
 
 data class NovaCompraUiState(
+    val modoEdicao: Boolean = false,
+    val carregando: Boolean = false,
     val valorCentavos: Long = 0,
     val categoria: Categoria? = null,
     val formaPagamento: FormaPagamento? = null,
@@ -62,7 +64,11 @@ class NovaCompraViewModel(
     private val compraId: Long? = savedStateHandle.get<Long>(Rotas.ARG_COMPRA_ID)
         ?.takeIf { it != Rotas.COMPRA_NOVA }
 
-    private val formulario = MutableStateFlow(NovaCompraUiState())
+    private val formulario = MutableStateFlow(
+        NovaCompraUiState(modoEdicao = compraId != null, carregando = compraId != null)
+    )
+
+    private val compraOriginal = MutableStateFlow<Compra?>(null)
 
     private var validarAoAlterar = false
 
@@ -74,13 +80,40 @@ class NovaCompraViewModel(
                 initialValue = formulario.value,
             )
 
+    init {
+        if (compraId != null) carregarCompra(compraId)
+    }
+
+    private fun carregarCompra(id: Long) {
+        val userId = authRepository.usuarioAtualId()
+        viewModelScope.launch {
+            val compra = userId?.let { compraRepository.buscarPorId(id, it) }
+            if (compra == null) {
+                formulario.update { it.copy(carregando = false, mensagemConclusao = MENSAGEM_NAO_ENCONTRADA) }
+                return@launch
+            }
+            compraOriginal.value = compra
+            formulario.update {
+                it.copy(
+                    carregando = false,
+                    valorCentavos = compra.valorCentavos,
+                    categoria = compra.categoria,
+                    formaPagamento = compra.formaPagamento,
+                    estabelecimento = compra.estabelecimento,
+                    data = compra.data,
+                )
+            }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observarPrevia(): Flow<PreviaTeto?> {
         val userId = authRepository.usuarioAtualId() ?: return flowOf(null)
-        val totaisDoMes = formulario
+        val mesDaCompra = formulario
             .map { YearMonth.from(it.data) }
             .distinctUntilChanged()
-            .flatMapLatest { mes -> compraRepository.observarTotaisDoMes(userId, mes) }
+        val totaisDoMes = mesDaCompra
+            .flatMapLatest { mes -> compraRepository.observarTotaisDoMes(userId, mes).map { mes to it } }
         val categoriaEValor = formulario
             .map { it.categoria to it.valorCentavos }
             .distinctUntilChanged()
@@ -89,9 +122,14 @@ class NovaCompraViewModel(
             categoriaEValor,
             totaisDoMes,
             orcamentoRepository.observarTetos(userId),
-        ) { (categoria, valor), totais, tetos ->
+            compraOriginal,
+        ) { (categoria, valor), (mes, totais), tetos, original ->
             if (categoria == null || valor <= 0) return@combine null
-            val gasto = (totais[categoria] ?: 0L) + valor
+            // Na edição, o total do banco ainda inclui a versão salva da compra.
+            val jaContada = original
+                ?.takeIf { it.categoria == categoria && YearMonth.from(it.data) == mes }
+                ?.valorCentavos ?: 0L
+            val gasto = (totais[categoria] ?: 0L) - jaContada + valor
             val teto = tetos[categoria] ?: 0L
             val percentual = percentualDe(gasto, teto)
             PreviaTeto(
@@ -142,7 +180,7 @@ class NovaCompraViewModel(
 
     fun salvar() {
         val estado = formulario.value
-        if (estado.salvando) return
+        if (estado.carregando || estado.salvando) return
         val userId = authRepository.usuarioAtualId() ?: return
 
         validarAoAlterar = true
@@ -159,19 +197,44 @@ class NovaCompraViewModel(
         if (comErros.temErros() || categoria == null || formaPagamento == null) return
 
         formulario.update { it.copy(salvando = true) }
+        val original = compraOriginal.value
         viewModelScope.launch {
-            compraRepository.salvar(
-                Compra(
-                    userId = userId,
-                    valorCentavos = estado.valorCentavos,
-                    categoria = categoria,
-                    estabelecimento = estado.estabelecimento.trim(),
-                    formaPagamento = formaPagamento,
-                    data = estado.data,
-                    criadoEm = System.currentTimeMillis(),
+            val mensagem = if (original == null) {
+                compraRepository.salvar(
+                    Compra(
+                        userId = userId,
+                        valorCentavos = estado.valorCentavos,
+                        categoria = categoria,
+                        estabelecimento = estado.estabelecimento.trim(),
+                        formaPagamento = formaPagamento,
+                        data = estado.data,
+                        criadoEm = System.currentTimeMillis(),
+                    )
                 )
-            )
-            formulario.update { it.copy(salvando = false, mensagemConclusao = MENSAGEM_REGISTRADA) }
+                MENSAGEM_REGISTRADA
+            } else {
+                val atualizada = compraRepository.atualizar(
+                    original.copy(
+                        valorCentavos = estado.valorCentavos,
+                        categoria = categoria,
+                        estabelecimento = estado.estabelecimento.trim(),
+                        formaPagamento = formaPagamento,
+                        data = estado.data,
+                    )
+                )
+                if (atualizada) MENSAGEM_ATUALIZADA else MENSAGEM_NAO_ENCONTRADA
+            }
+            formulario.update { it.copy(salvando = false, mensagemConclusao = mensagem) }
+        }
+    }
+
+    fun excluir() {
+        val original = compraOriginal.value ?: return
+        if (formulario.value.salvando) return
+        formulario.update { it.copy(salvando = true) }
+        viewModelScope.launch {
+            compraRepository.excluir(original.id, original.userId)
+            formulario.update { it.copy(salvando = false, mensagemConclusao = MENSAGEM_EXCLUIDA) }
         }
     }
 
@@ -183,5 +246,8 @@ class NovaCompraViewModel(
 
     companion object {
         const val MENSAGEM_REGISTRADA = "Compra registrada"
+        const val MENSAGEM_ATUALIZADA = "Compra atualizada"
+        const val MENSAGEM_EXCLUIDA = "Compra excluída"
+        const val MENSAGEM_NAO_ENCONTRADA = "Compra não encontrada"
     }
 }

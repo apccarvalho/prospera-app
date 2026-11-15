@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -206,7 +207,11 @@ private fun NavHostProspera(
             HistoricoScreen(
                 uiState = uiState,
                 aoSelecionarFiltro = viewModel::selecionarFiltro,
-                aoAbrirCompra = {},
+                aoAbrirCompra = { compraId ->
+                    if (entrada.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                        navController.navigate(Rotas.novaCompra(compraId))
+                    }
+                },
                 mensagem = mensagem,
                 aoMensagemExibida = entrada::consumirMensagemDeCompra,
             )
@@ -237,6 +242,7 @@ private fun NavHostProspera(
                 aoAlterarEstabelecimento = viewModel::alterarEstabelecimento,
                 aoAlterarData = viewModel::alterarData,
                 aoSalvar = viewModel::salvar,
+                aoExcluir = viewModel::excluir,
                 aoVoltar = dropUnlessResumed { navController.popBackStack() },
             )
         }
