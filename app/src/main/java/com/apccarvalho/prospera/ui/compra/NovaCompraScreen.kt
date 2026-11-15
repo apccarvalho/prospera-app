@@ -102,11 +102,13 @@ fun NovaCompraScreen(
 ) {
     val focoValor = remember { FocusRequester() }
     val teclado = LocalSoftwareKeyboardController.current
+    var focoInicialAplicado by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        if (!uiState.modoEdicao) {
+        if (!uiState.modoEdicao && !focoInicialAplicado) {
             focoValor.requestFocus()
             teclado?.show()
         }
+        focoInicialAplicado = true
     }
     var confirmandoExclusao by rememberSaveable { mutableStateOf(false) }
 
@@ -275,7 +277,6 @@ private fun CardValor(
 ) {
     val focusManager = LocalFocusManager.current
     val texto = Dinheiro.formatarSemSimbolo(centavos)
-    // Mesma máscara do CampoValor: o texto é sempre reescrito com o cursor no fim.
     var valorCampo by remember(texto) {
         mutableStateOf(TextFieldValue(texto, TextRange(texto.length)))
     }
@@ -321,8 +322,8 @@ private fun CardValor(
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) },
             ),
-            // Sem largura intrínseca: ela ficava fixa no tamanho inicial e o valor rolava para
-            // dentro do campo. Com o "R$" na decorationBox, a Row centraliza o conjunto.
+            // A largura intrínseca do campo não acompanha o texto digitado; por isso ele ocupa o
+            // card e o símbolo fica na decorationBox, centralizado junto com o valor.
             modifier = modifier.fillMaxWidth(),
             decorationBox = { campo ->
                 Row(
@@ -331,7 +332,7 @@ private fun CardValor(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "R$",
+                        text = stringResource(R.string.simbolo_moeda),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,

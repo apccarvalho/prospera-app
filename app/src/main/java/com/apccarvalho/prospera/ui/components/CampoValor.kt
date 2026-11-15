@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apccarvalho.prospera.R
 import com.apccarvalho.prospera.domain.util.Dinheiro
 import com.apccarvalho.prospera.ui.theme.Ameixa
 import com.apccarvalho.prospera.ui.theme.Branco
@@ -128,7 +130,7 @@ fun CampoValor(
                         .padding(horizontal = 16.dp),
                 ) {
                     Text(
-                        text = "R$",
+                        text = stringResource(R.string.simbolo_moeda),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = cores.primary,

@@ -38,6 +38,13 @@ android {
     buildFeatures {
         compose = true
     }
+    // O seletor de data força pt-BR em tempo de execução; sem a divisão por idioma,
+    // os textos em português das bibliotecas chegam a qualquer aparelho.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 dependencies {

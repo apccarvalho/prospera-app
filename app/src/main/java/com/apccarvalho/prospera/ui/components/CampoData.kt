@@ -96,7 +96,6 @@ fun CampoData(
                 .clickable(
                     enabled = habilitado,
                     role = Role.Button,
-                    onClickLabel = stringResource(R.string.data_escolher),
                     onClick = { seletorAberto = true },
                 )
                 .padding(horizontal = 16.dp),
@@ -109,7 +108,7 @@ fun CampoData(
             )
             Icon(
                 imageVector = Icons.Rounded.CalendarToday,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.data_escolher),
                 tint = cores.primary,
                 modifier = Modifier.size(20.dp),
             )

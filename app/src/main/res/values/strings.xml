@@ -74,6 +74,7 @@
     <string name="historico_vazio_categoria">Nenhuma compra de %1$s neste mês</string>
 
     <string name="cancelar">Cancelar</string>
+    <string name="simbolo_moeda">R$</string>
     <string name="data_hoje">Hoje, %1$s</string>
     <string name="data_ontem">Ontem, %1$s</string>
     <string name="data_escolher">Escolher data</string>
