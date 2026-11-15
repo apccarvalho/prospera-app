@@ -12,6 +12,7 @@ object Rotas {
 
     const val ARG_COMPRA_ID = "compraId"
     const val NOVA_COMPRA = "nova-compra?$ARG_COMPRA_ID={$ARG_COMPRA_ID}"
+    const val COMPRA_NOVA = -1L
 
     fun tetos(primeiroAcesso: Boolean): String = "tetos?$ARG_PRIMEIRO_ACESSO=$primeiroAcesso"
 

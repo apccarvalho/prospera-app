@@ -201,7 +201,7 @@ private fun NavHostProspera(
             arguments = listOf(
                 navArgument(Rotas.ARG_COMPRA_ID) {
                     type = NavType.LongType
-                    defaultValue = -1L
+                    defaultValue = Rotas.COMPRA_NOVA
                 },
             ),
         ) {
