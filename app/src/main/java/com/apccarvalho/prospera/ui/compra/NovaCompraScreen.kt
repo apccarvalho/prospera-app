@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +56,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -296,45 +294,53 @@ private fun CardValor(
             fontWeight = FontWeight.Medium,
             color = TextoSecundario,
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "R$",
-                fontSize = 22.sp,
+        BasicTextField(
+            value = valorCampo,
+            onValueChange = { novo ->
+                val novoCentavos = Dinheiro.aplicarDigitacao(centavos, novo.text)
+                if (novoCentavos != centavos) aoAlterar(novoCentavos)
+                val novoTexto = Dinheiro.formatarSemSimbolo(novoCentavos)
+                valorCampo = TextFieldValue(novoTexto, TextRange(novoTexto.length))
+            },
+            singleLine = true,
+            textStyle = TextStyle(
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(Modifier.width(8.dp))
-            BasicTextField(
-                value = valorCampo,
-                onValueChange = { novo ->
-                    val novoCentavos = Dinheiro.aplicarDigitacao(centavos, novo.text)
-                    if (novoCentavos != centavos) aoAlterar(novoCentavos)
-                    val novoTexto = Dinheiro.formatarSemSimbolo(novoCentavos)
-                    valorCampo = TextFieldValue(novoTexto, TextRange(novoTexto.length))
+                color = when {
+                    erro -> MaterialTheme.colorScheme.error
+                    centavos == 0L -> Placeholder
+                    else -> Ameixa
                 },
-                singleLine = true,
-                textStyle = TextStyle(
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    color = when {
-                        erro -> MaterialTheme.colorScheme.error
-                        centavos == 0L -> Placeholder
-                        else -> Ameixa
-                    },
-                ),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                    autoCorrectEnabled = false,
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) },
-                ),
-                modifier = modifier.width(IntrinsicSize.Min),
-            )
-        }
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+                autoCorrectEnabled = false,
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) },
+            ),
+            // Sem largura intrínseca: ela ficava fixa no tamanho inicial e o valor rolava para
+            // dentro do campo. Com o "R$" na decorationBox, a Row centraliza o conjunto.
+            modifier = modifier.fillMaxWidth(),
+            decorationBox = { campo ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "R$",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    campo()
+                }
+            },
+        )
     }
 }
 
