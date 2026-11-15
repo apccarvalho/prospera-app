@@ -37,6 +37,7 @@ import com.apccarvalho.prospera.ui.compra.NovaCompraViewModel
 import com.apccarvalho.prospera.ui.dashboard.DashboardScreen
 import com.apccarvalho.prospera.ui.dashboard.DashboardViewModel
 import com.apccarvalho.prospera.ui.historico.HistoricoScreen
+import com.apccarvalho.prospera.ui.historico.HistoricoViewModel
 import com.apccarvalho.prospera.ui.tetos.TetosScreen
 import com.apccarvalho.prospera.ui.tetos.TetosViewModel
 import com.apccarvalho.prospera.ui.theme.FundoLavanda
@@ -197,8 +198,18 @@ private fun NavHostProspera(
             )
         }
 
-        composable(Rotas.HISTORICO) {
-            HistoricoScreen()
+        composable(Rotas.HISTORICO) { entrada ->
+            val viewModel: HistoricoViewModel = viewModel(factory = ProsperaViewModelFactory)
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val mensagem by entrada.mensagemDeCompra()
+
+            HistoricoScreen(
+                uiState = uiState,
+                aoSelecionarFiltro = viewModel::selecionarFiltro,
+                aoAbrirCompra = {},
+                mensagem = mensagem,
+                aoMensagemExibida = entrada::consumirMensagemDeCompra,
+            )
         }
 
         composable(

@@ -12,6 +12,7 @@ import com.apccarvalho.prospera.ui.auth.CadastroViewModel
 import com.apccarvalho.prospera.ui.auth.LoginViewModel
 import com.apccarvalho.prospera.ui.compra.NovaCompraViewModel
 import com.apccarvalho.prospera.ui.dashboard.DashboardViewModel
+import com.apccarvalho.prospera.ui.historico.HistoricoViewModel
 import com.apccarvalho.prospera.ui.navigation.InicioViewModel
 import com.apccarvalho.prospera.ui.navigation.Rotas
 import com.apccarvalho.prospera.ui.tetos.TetosViewModel
@@ -41,6 +42,13 @@ val ProsperaViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
         DashboardViewModel(
             compraRepository = container.compraRepository,
             orcamentoRepository = container.orcamentoRepository,
+            authRepository = container.authRepository,
+        )
+    }
+    initializer {
+        val container = appContainer()
+        HistoricoViewModel(
+            compraRepository = container.compraRepository,
             authRepository = container.authRepository,
         )
     }

@@ -63,6 +63,15 @@
     <string name="nav_tetos">Tetos</string>
     <string name="nova_compra">Nova compra</string>
     <string name="historico_titulo">Histórico</string>
+    <string name="historico_subtitulo">%1$s · %2$s · %3$s</string>
+    <plurals name="historico_quantidade_compras">
+        <item quantity="one">%d compra</item>
+        <item quantity="other">%d compras</item>
+    </plurals>
+    <string name="historico_filtro_todas">Todas</string>
+    <string name="historico_detalhe_compra">%1$s · %2$s</string>
+    <string name="historico_vazio">Nenhuma compra registrada neste mês</string>
+    <string name="historico_vazio_categoria">Nenhuma compra de %1$s neste mês</string>
 
     <string name="cancelar">Cancelar</string>
     <string name="data_hoje">Hoje, %1$s</string>
